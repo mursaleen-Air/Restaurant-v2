@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+:root {
+  --color-primary: #ff6b6b;
+  --color-secondary: #4ecdc4;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  /* background and text colors moved to index.html to avoid @apply issues in v4 setup */
+}
