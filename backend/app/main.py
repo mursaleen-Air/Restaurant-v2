@@ -21,7 +21,7 @@ if settings.BACKEND_CORS_ORIGINS:
         allow_headers=["*"],
     )
 
-app.include_router(auth.router, prefix=f"{settings.API_V1_STR}/auth", tags=["auth"])
+app.include_router(auth.router, prefix=f"{settings.API_V1_STR}/auth", tags=["Authentication"])
 app.include_router(users.router, prefix=f"{settings.API_V1_STR}/users", tags=["users"])
 app.include_router(categories.router, prefix=f"{settings.API_V1_STR}/categories", tags=["categories"])
 app.include_router(menu.router, prefix=f"{settings.API_V1_STR}/menu", tags=["menu"])
