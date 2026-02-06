@@ -1,9 +1,10 @@
 from typing import Optional
+from datetime import datetime
 from pydantic import BaseModel
 
 class MenuItemBase(BaseModel):
     name: str
-    description: Optional[str] = None
+    description: str
     price: float
     image_url: Optional[str] = None
     is_available: bool = True
@@ -12,11 +13,17 @@ class MenuItemBase(BaseModel):
 class MenuItemCreate(MenuItemBase):
     pass
 
-class MenuItemUpdate(MenuItemBase):
-    pass
+class MenuItemUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    price: Optional[float] = None
+    image_url: Optional[str] = None
+    is_available: Optional[bool] = None
+    category_id: Optional[int] = None
 
-class MenuItem(MenuItemBase):
+class MenuItemResponse(MenuItemBase):
     id: int
+    created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True

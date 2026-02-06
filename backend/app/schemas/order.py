@@ -1,35 +1,34 @@
 from typing import List, Optional
 from datetime import datetime
 from pydantic import BaseModel
+from app.schemas.menu_item import MenuItemResponse
 
-class OrderItemBase(BaseModel):
+class OrderItemCreate(BaseModel):
     menu_item_id: int
     quantity: int
 
-class OrderItemCreate(OrderItemBase):
-    pass
-
-class OrderItem(OrderItemBase):
+class OrderItemResponse(BaseModel):
     id: int
-    order_id: int
-    price: float # Snapshot price
+    quantity: int
+    price: float
+    menu_item: MenuItemResponse
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
-class OrderBase(BaseModel):
-    pass
-
-class OrderCreate(OrderBase):
+class OrderCreate(BaseModel):
     items: List[OrderItemCreate]
 
-class Order(OrderBase):
+class OrderStatusUpdate(BaseModel):
+    status: str
+
+class OrderResponse(BaseModel):
     id: int
     user_id: int
     total_amount: float
     status: str
     created_at: datetime
-    items: List[OrderItem] = []
+    items: List[OrderItemResponse] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True

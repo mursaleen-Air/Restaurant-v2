@@ -7,21 +7,34 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        // Check for token and load user
+    const loadUser = async () => {
         const token = localStorage.getItem("token");
-        if (token) {
-            // Validate token or fetch user profile
-            // setUser({ name: "Demo User" }); // Placeholder
+        if (!token) {
+            setLoading(false);
+            return;
         }
-        setLoading(false);
+
+        try {
+            const res = await api.get("/users/me");
+            setUser(res.data);
+        } catch (error) {
+            console.error("Failed to load user", error);
+            localStorage.removeItem("token");
+            setUser(null);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        loadUser();
     }, []);
 
     const login = async (email, password) => {
         try {
-            const res = await api.post("/auth/login", { username: email, password });
+            const res = await api.post("/auth/login", { email, password });
             localStorage.setItem("token", res.data.access_token);
-            setUser(res.data.user); // Assuming API returns user
+            await loadUser();
             return true;
         } catch (error) {
             console.error("Login failed", error);

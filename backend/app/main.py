@@ -4,7 +4,9 @@ from app.db.base import Base
 from app.db.session import engine
 
 from app.core.config import settings
-from app.routers import auth, users, categories, menu, orders, admin
+from app.routers import auth, users, categories, menu, orders, admin, test_role
+# Import all models to ensure SQLAlchemy relationships are properly resolved
+from app.models import User, Category, MenuItem, OrderItem, Payment, Order
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -27,6 +29,7 @@ app.include_router(categories.router, prefix=f"{settings.API_V1_STR}/categories"
 app.include_router(menu.router, prefix=f"{settings.API_V1_STR}/menu", tags=["menu"])
 app.include_router(orders.router, prefix=f"{settings.API_V1_STR}/orders", tags=["orders"])
 app.include_router(admin.router, prefix=f"{settings.API_V1_STR}/admin", tags=["admin"])
+app.include_router(test_role.router, prefix="/test-role", tags=["Role Test"])
 
 @app.on_event("startup")
 def on_startup():

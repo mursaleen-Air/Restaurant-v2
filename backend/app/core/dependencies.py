@@ -34,10 +34,25 @@ def get_current_user(
         raise credentials_exception
     return user
 
-def get_current_admin(
+def get_current_active_user(
     current_user: User = Depends(get_current_user),
 ) -> User:
+    # Assuming all users are active for now as per requirements
+    return current_user
+
+def require_admin(
+    current_user: User = Depends(get_current_active_user),
+) -> User:
     if current_user.role != "admin":
+        raise HTTPException(
+            status_code=403, detail="The user doesn't have enough privileges"
+        )
+    return current_user
+
+def require_customer(
+    current_user: User = Depends(get_current_active_user),
+) -> User:
+    if current_user.role != "customer":
         raise HTTPException(
             status_code=403, detail="The user doesn't have enough privileges"
         )
