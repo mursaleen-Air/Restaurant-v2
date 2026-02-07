@@ -37,6 +37,23 @@ def read_categories(
     categories = db.query(Category).offset(skip).limit(limit).all()
     return categories
 
+@router.put("/{category_id}", response_model=CategoryResponse)
+def update_category(
+    category_id: int,
+    category_update: CategoryCreate,
+    db: Session = Depends(get_db),
+    current_user = Depends(require_admin)
+):
+    db_category = db.query(Category).filter(Category.id == category_id).first()
+    if not db_category:
+        raise HTTPException(status_code=404, detail="Category not found")
+    
+    db_category.name = category_update.name
+    db_category.description = category_update.description
+    db.commit()
+    db.refresh(db_category)
+    return db_category
+
 @router.delete("/{category_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_category(
     category_id: int, 

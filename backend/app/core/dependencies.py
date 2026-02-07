@@ -52,7 +52,7 @@ def require_admin(
 def require_customer(
     current_user: User = Depends(get_current_active_user),
 ) -> User:
-    if current_user.role != "customer":
+    if current_user.role not in ["customer", "admin"]:
         raise HTTPException(
             status_code=403, detail="The user doesn't have enough privileges"
         )
