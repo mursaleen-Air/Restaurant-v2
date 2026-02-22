@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import api from "../../services/api";
 import { CartContext } from "../../context/CartContext";
+import { motion, AnimatePresence } from "framer-motion";
 
 // Fake data for beautiful display when API is empty or fails
 const FAKE_MENU_DATA = {
@@ -81,8 +82,6 @@ const Menu = () => {
         ...categories
     ];
 
-    const buttonCount = allCategoryButtons.length;
-
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
@@ -93,12 +92,6 @@ const Menu = () => {
             </div>
         );
     }
-
-    // Calculate button positions for the wave (as percentage)
-    const buttonPositions = allCategoryButtons.map((_, i) => {
-        const segmentWidth = 100 / buttonCount;
-        return segmentWidth * i + segmentWidth / 2; // Center of each segment
-    });
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -118,19 +111,24 @@ const Menu = () => {
                     </div>
 
                     {/* Content */}
-                    <div className="relative max-w-7xl mx-auto text-center">
-                        <h1 className="text-5xl md:text-6xl font-black text-white mb-4 animate-fade-in-down">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.6 }}
+                        className="relative max-w-7xl mx-auto text-center"
+                    >
+                        <h1 className="text-5xl md:text-6xl font-black text-white mb-4">
                             Our <span className="gradient-text">Menu</span>
                         </h1>
-                        <p className="text-xl text-gray-400 max-w-2xl mx-auto animate-fade-in-up">
+                        <p className="text-xl text-gray-400 max-w-2xl mx-auto">
                             Discover our carefully crafted dishes, made with passion and the finest ingredients
                         </p>
-                    </div>
+                    </motion.div>
                 </div>
 
                 {/* Sine Wave Container */}
                 <div className="relative h-24 md:h-28 overflow-visible" style={{ marginTop: '-1px' }}>
-                    {/* SVG Sine Wave - dark color that extends down */}
+                    {/* SVG Sine Wave */}
                     <svg
                         className="absolute top-0 left-0 w-full"
                         viewBox="0 0 1200 100"
@@ -138,46 +136,38 @@ const Menu = () => {
                         style={{ height: '100%' }}
                     >
                         <path
-                            d={`
-                                M0,0 
-                                L0,50
-                                C100,50 140,100 200,100
-                                C260,100 300,50 400,50
-                                C500,50 540,100 600,100
-                                C660,100 700,50 800,50
-                                C900,50 940,100 1000,100
-                                C1060,100 1100,50 1200,50
-                                L1200,0
-                                Z
-                            `}
+                            d={`M0,0 L0,50 C100,50 140,100 200,100 C260,100 300,50 400,50 C500,50 540,100 600,100 C660,100 700,50 800,50 C900,50 940,100 1000,100 C1060,100 1100,50 1200,50 L1200,0 Z`}
                             fill="#1a1a2e"
                         />
                     </svg>
 
-                    {/* Buttons positioned at wave peaks (where wave goes UP) */}
+                    {/* Buttons */}
                     <div className="absolute inset-0 flex items-start justify-around px-4 md:px-12 pt-2 md:pt-4">
                         {allCategoryButtons.map((cat, index) => {
                             const isActive = activeCategory === cat.id;
 
                             return (
-                                <button
+                                <motion.button
+                                    initial={{ opacity: 0, y: -20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.5, delay: index * 0.1 }}
                                     key={cat.id ?? 'all'}
                                     onClick={() => setActiveCategory(cat.id)}
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.95 }}
                                     className={`
                                         w-16 h-16 md:w-20 md:h-20 rounded-full 
                                         flex items-center justify-center
                                         text-[10px] md:text-xs font-bold text-center
-                                        leading-tight px-1
-                                        shadow-lg transition-all duration-300
+                                        leading-tight px-1 shadow-lg transition-colors
                                         ${isActive
-                                            ? 'bg-gradient-to-br from-primary to-orange-500 text-white scale-110 shadow-xl shadow-primary/40'
-                                            : 'bg-white text-gray-700 hover:shadow-xl hover:scale-105 hover:text-primary'
+                                            ? 'bg-gradient-to-br from-primary to-orange-500 text-white shadow-xl shadow-primary/40 scale-110'
+                                            : 'bg-white text-gray-700 hover:text-primary'
                                         }
                                     `}
-                                    style={{ animationDelay: `${index * 0.1}s` }}
                                 >
                                     {cat.name}
-                                </button>
+                                </motion.button>
                             );
                         })}
                     </div>
@@ -189,87 +179,98 @@ const Menu = () => {
 
             {/* Menu Items */}
             <div className="max-w-7xl mx-auto px-4 py-8">
-                {filteredCategories.map((category, catIndex) => {
-                    const items = getItemsByCategory(category.id);
-                    if (items.length === 0) return null;
+                <AnimatePresence>
+                    {filteredCategories.map((category, catIndex) => {
+                        const items = getItemsByCategory(category.id);
+                        if (items.length === 0) return null;
 
-                    return (
-                        <div key={category.id} className="mb-16 animate-fade-in-up" style={{ animationDelay: `${catIndex * 0.1}s` }}>
-                            <div className="flex items-center gap-4 mb-8">
-                                <h2 className="text-3xl font-bold text-gray-900">
-                                    {category.name}
-                                </h2>
-                                <div className="flex-1 h-px bg-gradient-to-r from-gray-300 to-transparent"></div>
-                                <span className="text-sm text-gray-500 bg-white px-3 py-1 rounded-full shadow-sm">
-                                    {items.length} items
-                                </span>
-                            </div>
+                        return (
+                            <motion.div
+                                initial={{ opacity: 0, y: 40 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -40 }}
+                                transition={{ duration: 0.5, delay: catIndex * 0.1 }}
+                                key={category.id}
+                                className="mb-16"
+                            >
+                                <div className="flex items-center gap-4 mb-8">
+                                    <h2 className="text-3xl font-bold text-gray-900">
+                                        {category.name}
+                                    </h2>
+                                    <div className="flex-1 h-px bg-gradient-to-r from-gray-300 to-transparent"></div>
+                                    <span className="text-sm text-gray-500 bg-white px-3 py-1 rounded-full shadow-sm">
+                                        {items.length} items
+                                    </span>
+                                </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {items.map((item, itemIndex) => (
-                                    <div
-                                        key={item.id}
-                                        className="group bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all duration-500 overflow-hidden border border-gray-100 animate-fade-in-up"
-                                        style={{ animationDelay: `${itemIndex * 0.1}s` }}
-                                    >
-                                        {/* Image */}
-                                        <div className="relative h-56 overflow-hidden">
-                                            <img
-                                                src={item.image_url || `https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&q=80`}
-                                                alt={item.name}
-                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                                            />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {items.map((item, itemIndex) => (
+                                        <motion.div
+                                            initial={{ opacity: 0, scale: 0.9 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            transition={{ duration: 0.4, delay: itemIndex * 0.05 }}
+                                            key={item.id}
+                                            className="group bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all duration-500 overflow-hidden border border-gray-100"
+                                        >
+                                            {/* Image */}
+                                            <div className="relative h-56 overflow-hidden">
+                                                <img
+                                                    src={item.image_url || `https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&q=80`}
+                                                    alt={item.name}
+                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                                />
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-                                            {/* Quick Add Button */}
-                                            <button
-                                                onClick={() => handleAddToCart(item)}
-                                                className={`absolute bottom-4 right-4 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 transform ${addedItems[item.id]
-                                                    ? "bg-green-500 scale-110"
-                                                    : "bg-white shadow-lg opacity-0 group-hover:opacity-100 hover:scale-110"
-                                                    }`}
-                                            >
-                                                {addedItems[item.id] ? (
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="white" className="w-6 h-6">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                                                    </svg>
-                                                ) : (
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 text-primary">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                                    </svg>
-                                                )}
-                                            </button>
-                                        </div>
-
-                                        {/* Content */}
-                                        <div className="p-6">
-                                            <div className="flex justify-between items-start mb-3">
-                                                <h3 className="text-xl font-bold text-gray-900 group-hover:text-primary transition-colors">
-                                                    {item.name}
-                                                </h3>
-                                                <span className="text-xl font-bold gradient-text">
-                                                    ${item.price.toFixed(2)}
-                                                </span>
+                                                {/* Quick Add Button */}
+                                                <button
+                                                    onClick={() => handleAddToCart(item)}
+                                                    className={`absolute bottom-4 right-4 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 transform ${addedItems[item.id]
+                                                        ? "bg-green-500 scale-110"
+                                                        : "bg-white shadow-lg opacity-0 group-hover:opacity-100 hover:scale-110"
+                                                        }`}
+                                                >
+                                                    {addedItems[item.id] ? (
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="white" className="w-6 h-6">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                                                        </svg>
+                                                    ) : (
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 text-primary">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                                        </svg>
+                                                    )}
+                                                </button>
                                             </div>
-                                            <p className="text-gray-600 mb-5 line-clamp-2">
-                                                {item.description}
-                                            </p>
-                                            <button
-                                                onClick={() => handleAddToCart(item)}
-                                                className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 ${addedItems[item.id]
-                                                    ? "bg-green-500 text-white"
-                                                    : "bg-gray-100 text-gray-900 hover:gradient-bg hover:text-white"
-                                                    }`}
-                                            >
-                                                {addedItems[item.id] ? "✓ Added!" : "Add to Cart"}
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    );
-                })}
+
+                                            {/* Content */}
+                                            <div className="p-6">
+                                                <div className="flex justify-between items-start mb-3">
+                                                    <h3 className="text-xl font-bold text-gray-900 group-hover:text-primary transition-colors">
+                                                        {item.name}
+                                                    </h3>
+                                                    <span className="text-xl font-bold gradient-text">
+                                                        ${item.price.toFixed(2)}
+                                                    </span>
+                                                </div>
+                                                <p className="text-gray-600 mb-5 line-clamp-2">
+                                                    {item.description}
+                                                </p>
+                                                <button
+                                                    onClick={() => handleAddToCart(item)}
+                                                    className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 ${addedItems[item.id]
+                                                        ? "bg-green-500 text-white"
+                                                        : "bg-gray-100 text-gray-900 hover:gradient-bg hover:text-white"
+                                                        }`}
+                                                >
+                                                    {addedItems[item.id] ? "✓ Added!" : "Add to Cart"}
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </div>
+                            </motion.div>
+                        );
+                    })}
+                </AnimatePresence>
             </div>
         </div>
     );

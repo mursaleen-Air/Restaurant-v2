@@ -1,9 +1,9 @@
 import { useContext, useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation, Outlet } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { CartContext } from "../../context/CartContext";
 
-const Layout = ({ children }) => {
+const Layout = () => {
     const { user, logout } = useContext(AuthContext);
     const { cart } = useContext(CartContext);
     const navigate = useNavigate();
@@ -35,8 +35,8 @@ const Layout = ({ children }) => {
         <div className="min-h-screen flex flex-col">
             {/* Navbar */}
             <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled || !isHomePage
-                    ? "bg-white/95 backdrop-blur-lg shadow-lg"
-                    : "bg-transparent"
+                ? "bg-white/95 backdrop-blur-lg shadow-lg"
+                : "bg-transparent"
                 }`}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-20 items-center">
@@ -73,8 +73,8 @@ const Layout = ({ children }) => {
                             {/* Cart */}
                             <Link to="/cart" className="relative group">
                                 <div className={`p-2 rounded-xl transition-all ${isScrolled || !isHomePage
-                                        ? "hover:bg-gray-100"
-                                        : "hover:bg-white/10"
+                                    ? "hover:bg-gray-100"
+                                    : "hover:bg-white/10"
                                     }`}>
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`w-6 h-6 transition-colors ${isScrolled || !isHomePage ? "text-gray-700 group-hover:text-primary" : "text-white"
                                         }`}>
@@ -103,8 +103,8 @@ const Layout = ({ children }) => {
                                     <button
                                         onClick={handleLogout}
                                         className={`text-sm font-medium px-4 py-2 rounded-lg transition-all ${isScrolled || !isHomePage
-                                                ? "text-gray-500 hover:text-red-500 hover:bg-red-50"
-                                                : "text-white/80 hover:text-white hover:bg-white/10"
+                                            ? "text-gray-500 hover:text-red-500 hover:bg-red-50"
+                                            : "text-white/80 hover:text-white hover:bg-white/10"
                                             }`}
                                     >
                                         Logout
@@ -161,7 +161,7 @@ const Layout = ({ children }) => {
 
             {/* Main Content */}
             <main className={`flex-grow ${isHomePage ? "" : "pt-20"}`}>
-                {children}
+                <Outlet />
             </main>
 
             {/* Footer */}
