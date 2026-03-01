@@ -5,6 +5,7 @@ import RestaurantLayout from '../components/layout/RestaurantLayout';
 // Existing pages
 import Landing from '../pages/Landing/Landing';
 import Menu from '../pages/Menu/Menu';
+import Reservations from '../pages/Reservations/Reservations';
 import Cart from '../pages/Cart/Cart';
 import Checkout from '../pages/Checkout/Checkout';
 import Auth from '../pages/Auth/Auth';
@@ -41,6 +42,7 @@ const AppRoutes = () => {
             <Route element={<Layout />}>
                 <Route path="/" element={<Landing />} />
                 <Route path="/menu" element={<Menu />} />
+                <Route path="/reservations" element={<Reservations />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/checkout" element={<Checkout />} />
                 <Route path="/auth" element={<Auth />} />

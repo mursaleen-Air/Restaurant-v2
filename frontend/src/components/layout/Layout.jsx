@@ -69,6 +69,13 @@ const Layout = () => {
                             >
                                 Menu
                             </Link>
+                            <Link
+                                to="/reservations"
+                                className={`font-medium transition-all hover:text-primary ${isScrolled || !isHomePage ? "text-gray-700" : "text-white/90 hover:text-white"
+                                    } ${location.pathname === "/reservations" ? "text-primary" : ""}`}
+                            >
+                                Reservations
+                            </Link>
 
                             {/* Cart */}
                             <Link to="/cart" className="relative group">
@@ -142,6 +149,7 @@ const Layout = () => {
                     <div className="p-6 space-y-4">
                         <Link to="/" className="block py-3 text-lg font-medium text-gray-900 hover:text-primary">Home</Link>
                         <Link to="/menu" className="block py-3 text-lg font-medium text-gray-900 hover:text-primary">Menu</Link>
+                        <Link to="/reservations" className="block py-3 text-lg font-medium text-gray-900 hover:text-primary">Reservations</Link>
                         <Link to="/cart" className="flex items-center gap-3 py-3 text-lg font-medium text-gray-900 hover:text-primary">
                             Cart
                             {cartCount > 0 && (
